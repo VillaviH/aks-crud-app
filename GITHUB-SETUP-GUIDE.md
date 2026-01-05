@@ -246,6 +246,34 @@ kubectl scale deployment frontend-deployment --replicas=3 -n crud-app
 
 ## 🚨 Solución de Problemas
 
+### Error: "Authenticating using the Azure CLI is only supported as a User"
+
+**Causa**: Terraform está intentando usar Azure CLI en lugar del Service Principal.
+
+**Solución**: Este error ya está solucionado en los workflows actualizados. Los workflows ahora configuran las variables de entorno ARM_* correctamente para usar Service Principal.
+
+**Si aún ves este error**:
+
+1. **Verifica que AZURE_CREDENTIALS esté configurado correctamente**:
+   - Debe ser el JSON completo del Service Principal
+   - Debe incluir: clientId, clientSecret, subscriptionId, tenantId
+
+2. **Verifica el formato del secreto**:
+```json
+{
+  "clientId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+  "clientSecret": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  "subscriptionId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+  "tenantId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+  "activeDirectoryEndpointUrl": "https://login.microsoftonline.com",
+  "resourceManagerEndpointUrl": "https://management.azure.com/",
+  "activeDirectoryGraphResourceId": "https://graph.windows.net/",
+  "sqlManagementEndpointUrl": "https://management.core.windows.net:8443/",
+  "galleryEndpointUrl": "https://gallery.azure.com/",
+  "managementEndpointUrl": "https://management.core.windows.net/"
+}
+```
+
 ### Error: "Terraform exited with code 3" (Formato)
 
 **Causa**: Los archivos de Terraform no están correctamente formateados.

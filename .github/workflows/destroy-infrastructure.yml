@@ -66,6 +66,11 @@ jobs:
     - name: Terraform Init
       working-directory: ${{ env.WORKING_DIRECTORY }}
       continue-on-error: true
+      env:
+        ARM_CLIENT_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).clientId }}
+        ARM_CLIENT_SECRET: ${{ fromJson(secrets.AZURE_CREDENTIALS).clientSecret }}
+        ARM_SUBSCRIPTION_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).subscriptionId }}
+        ARM_TENANT_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).tenantId }}
       run: |
         terraform init \
           -backend-config="resource_group_name=${{ env.BACKEND_RESOURCE_GROUP_NAME }}" \
@@ -76,6 +81,11 @@ jobs:
     - name: Terraform Destroy
       working-directory: ${{ env.WORKING_DIRECTORY }}
       continue-on-error: true
+      env:
+        ARM_CLIENT_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).clientId }}
+        ARM_CLIENT_SECRET: ${{ fromJson(secrets.AZURE_CREDENTIALS).clientSecret }}
+        ARM_SUBSCRIPTION_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).subscriptionId }}
+        ARM_TENANT_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).tenantId }}
       run: terraform destroy -auto-approve
 
   azure-cli-destroy:
