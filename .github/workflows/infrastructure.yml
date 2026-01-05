@@ -16,7 +16,7 @@ env:
   TERRAFORM_VERSION: '1.5.0'
   WORKING_DIRECTORY: './infrastructure'
   BACKEND_RESOURCE_GROUP_NAME: 'rg-terraform-state'
-  BACKEND_STORAGE_ACCOUNT_NAME: 'tfstateaks${{ github.run_number }}'
+  BACKEND_STORAGE_ACCOUNT_NAME: 'tfstateakscrud${{ github.run_number }}'
   BACKEND_CONTAINER_NAME: 'tfstate'
   BACKEND_KEY: 'aks-crud-app.tfstate'
 
@@ -69,7 +69,10 @@ jobs:
 
     - name: Terraform Format Check
       working-directory: ${{ env.WORKING_DIRECTORY }}
-      run: terraform fmt -check
+      run: |
+        echo "Checking Terraform files in $(pwd)"
+        ls -la
+        terraform fmt -check -diff
 
     - name: Terraform Validate
       working-directory: ${{ env.WORKING_DIRECTORY }}

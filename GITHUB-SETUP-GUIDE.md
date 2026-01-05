@@ -246,6 +246,26 @@ kubectl scale deployment frontend-deployment --replicas=3 -n crud-app
 
 ## 🚨 Solución de Problemas
 
+### Error: "Terraform exited with code 3" (Formato)
+
+**Causa**: Los archivos de Terraform no están correctamente formateados.
+
+**Solución**:
+
+```bash
+# En tu directorio local, formatear archivos de Terraform
+cd aks-crud-app/infrastructure
+terraform fmt
+
+# Verificar que estén correctamente formateados
+terraform fmt -check
+
+# Hacer commit de los cambios
+git add .
+git commit -m "fix: format Terraform files"
+git push origin main
+```
+
 ### Error: Workflow falla en "Azure Login"
 ```bash
 # Verificar que AZURE_CREDENTIALS está configurado correctamente

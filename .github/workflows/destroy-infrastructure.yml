@@ -22,7 +22,7 @@ env:
   TERRAFORM_VERSION: '1.5.0'
   WORKING_DIRECTORY: './infrastructure'
   BACKEND_RESOURCE_GROUP_NAME: 'rg-terraform-state'
-  BACKEND_STORAGE_ACCOUNT_NAME: 'tfstateaks${{ github.run_number }}'
+  BACKEND_STORAGE_ACCOUNT_NAME: 'tfstateakscrud${{ github.run_number }}'
   BACKEND_CONTAINER_NAME: 'tfstate'
   BACKEND_KEY: 'aks-crud-app.tfstate'
   MAIN_RESOURCE_GROUP: 'rg-aks-crud-app'
