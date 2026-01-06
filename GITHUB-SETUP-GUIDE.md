@@ -277,6 +277,16 @@ kubectl scale deployment frontend-deployment --replicas=3 -n crud-app
 
 ## 🚨 Solución de Problemas
 
+### Error: "openjdk:17-jdk-slim: not found"
+
+**Causa**: Oracle cambió la distribución de imágenes OpenJDK en Docker Hub.
+
+**Solución**: Ya corregido en el código. El Dockerfile ahora usa `eclipse-temurin:17-jre-alpine` que es:
+- ✅ Mantenido activamente por Eclipse Foundation
+- ✅ Más pequeño (Alpine Linux)
+- ✅ Más seguro (JRE en lugar de JDK completo)
+- ✅ Compatible con OpenJDK 17
+
 ### Error: "AuthorizationFailed" - Role Assignment
 
 **Causa**: El Service Principal no tiene permisos para crear role assignments.
