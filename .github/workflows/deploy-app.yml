@@ -103,12 +103,15 @@ jobs:
           kubectl get pods -n ${{ env.NAMESPACE }} -l app=frontend -o wide
           echo ""
           echo "=== Pod Events ==="
-          kubectl get events -n ${{ env.NAMESPACE }} --field-selector involvedObject.kind=Pod --sort-by='.lastTimestamp' | grep frontend
+          kubectl get events -n ${{ env.NAMESPACE }} --field-selector involvedObject.kind=Pod --sort-by='.lastTimestamp' | grep frontend || echo "No events found"
           echo ""
-          echo "=== Pod Logs ==="
+          echo "=== Pod Logs (Current) ==="
           for pod in $(kubectl get pods -n ${{ env.NAMESPACE }} -l app=frontend -o jsonpath='{.items[*].metadata.name}'); do
-            echo "--- Logs for pod: $pod ---"
-            kubectl logs -n ${{ env.NAMESPACE }} $pod --tail=50 || echo "No logs available for $pod"
+            echo "--- Current logs for pod: $pod ---"
+            kubectl logs -n ${{ env.NAMESPACE }} $pod --tail=100 || echo "No current logs available for $pod"
+            echo ""
+            echo "--- Previous logs for pod: $pod ---"
+            kubectl logs -n ${{ env.NAMESPACE }} $pod --previous --tail=100 || echo "No previous logs available for $pod"
             echo ""
           done
           echo ""
@@ -117,10 +120,38 @@ jobs:
           echo ""
           echo "=== Deployment Status ==="
           kubectl describe deployment frontend-deployment -n ${{ env.NAMESPACE }}
+          echo ""
+          echo "=== ReplicaSet Status ==="
+          kubectl describe rs -n ${{ env.NAMESPACE }} -l app=frontend
           exit 1
         }
+        }
+
+    - name: Debug Frontend Issues
+      if: failure()
+      run: |
+        echo "🔍 Debugging frontend deployment issues..."
+        echo ""
+        echo "=== Pod Status ==="
+        kubectl get pods -n ${{ env.NAMESPACE }} -l app=frontend -o wide
+        echo ""
+        echo "=== Pod Logs ==="
+        kubectl get pods -n ${{ env.NAMESPACE }} -l app=frontend -o name | while read pod; do
+          echo "--- Logs for $pod ---"
+          kubectl logs -n ${{ env.NAMESPACE }} $pod --tail=100 || echo "No logs available"
+          echo "--- Previous logs for $pod ---"
+          kubectl logs -n ${{ env.NAMESPACE }} $pod --previous --tail=100 || echo "No previous logs available"
+          echo ""
+        done
+        echo ""
+        echo "=== Pod Events ==="
+        kubectl get events -n ${{ env.NAMESPACE }} --sort-by='.lastTimestamp' | grep frontend || echo "No events found"
+        echo ""
+        echo "=== Pod Describe ==="
+        kubectl describe pods -n ${{ env.NAMESPACE }} -l app=frontend
 
     - name: Get Service Information
+      if: success()
       run: |
         echo "## 🚀 Application Deployed Successfully!" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
