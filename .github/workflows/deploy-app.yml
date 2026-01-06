@@ -96,19 +96,29 @@ jobs:
         kubectl rollout status deployment/backend-deployment -n ${{ env.NAMESPACE }} --timeout=300s
         
         echo "⏳ Waiting for frontend deployment..."
-        kubectl rollout status deployment/frontend-deployment -n ${{ env.NAMESPACE }} --timeout=600s
-        
-        # If frontend fails, get diagnostic info
-        if [ $? -ne 0 ]; then
+        kubectl rollout status deployment/frontend-deployment -n ${{ env.NAMESPACE }} --timeout=600s || {
           echo "❌ Frontend deployment failed. Getting diagnostic information..."
-          echo "Pod status:"
-          kubectl get pods -n ${{ env.NAMESPACE }} -l app=frontend
-          echo "Pod logs:"
-          kubectl logs -n ${{ env.NAMESPACE }} -l app=frontend --tail=50
-          echo "Pod describe:"
+          echo ""
+          echo "=== Pod Status ==="
+          kubectl get pods -n ${{ env.NAMESPACE }} -l app=frontend -o wide
+          echo ""
+          echo "=== Pod Events ==="
+          kubectl get events -n ${{ env.NAMESPACE }} --field-selector involvedObject.kind=Pod --sort-by='.lastTimestamp' | grep frontend
+          echo ""
+          echo "=== Pod Logs ==="
+          for pod in $(kubectl get pods -n ${{ env.NAMESPACE }} -l app=frontend -o jsonpath='{.items[*].metadata.name}'); do
+            echo "--- Logs for pod: $pod ---"
+            kubectl logs -n ${{ env.NAMESPACE }} $pod --tail=50 || echo "No logs available for $pod"
+            echo ""
+          done
+          echo ""
+          echo "=== Pod Describe ==="
           kubectl describe pods -n ${{ env.NAMESPACE }} -l app=frontend
+          echo ""
+          echo "=== Deployment Status ==="
+          kubectl describe deployment frontend-deployment -n ${{ env.NAMESPACE }}
           exit 1
-        fi
+        }
 
     - name: Get Service Information
       run: |
