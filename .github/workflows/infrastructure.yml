@@ -217,6 +217,7 @@ jobs:
         ARM_TENANT_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).tenantId }}
       run: |
         echo "acr_login_server=$(terraform output -raw acr_login_server)" >> $GITHUB_OUTPUT
+        echo "acr_name=$(terraform output -raw acr_name)" >> $GITHUB_OUTPUT
         echo "postgres_fqdn=$(terraform output -raw postgres_fqdn)" >> $GITHUB_OUTPUT
         echo "cluster_name=$(terraform output -raw cluster_name)" >> $GITHUB_OUTPUT
 
@@ -226,10 +227,14 @@ jobs:
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "### 📋 Important Outputs:" >> $GITHUB_STEP_SUMMARY
         echo "- **ACR Login Server**: \`${{ steps.tf-outputs.outputs.acr_login_server }}\`" >> $GITHUB_STEP_SUMMARY
+        echo "- **ACR Name**: \`${{ steps.tf-outputs.outputs.acr_name }}\`" >> $GITHUB_STEP_SUMMARY
         echo "- **PostgreSQL FQDN**: \`${{ steps.tf-outputs.outputs.postgres_fqdn }}\`" >> $GITHUB_STEP_SUMMARY
         echo "- **AKS Cluster**: \`${{ steps.tf-outputs.outputs.cluster_name }}\`" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "### 🔄 Next Steps:" >> $GITHUB_STEP_SUMMARY
-        echo "1. Update repository secrets with these values" >> $GITHUB_STEP_SUMMARY
+        echo "1. Update repository secrets with these values:" >> $GITHUB_STEP_SUMMARY
+        echo "   - \`ACR_LOGIN_SERVER\`: ${{ steps.tf-outputs.outputs.acr_login_server }}" >> $GITHUB_STEP_SUMMARY
+        echo "   - \`ACR_NAME\`: ${{ steps.tf-outputs.outputs.acr_name }}" >> $GITHUB_STEP_SUMMARY
+        echo "   - \`POSTGRES_FQDN\`: ${{ steps.tf-outputs.outputs.postgres_fqdn }}" >> $GITHUB_STEP_SUMMARY
         echo "2. Run the application deployment workflow" >> $GITHUB_STEP_SUMMARY
         echo "3. Configure kubectl: \`az aks get-credentials --resource-group rg-aks-crud-app --name ${{ steps.tf-outputs.outputs.cluster_name }}\`" >> $GITHUB_STEP_SUMMARY

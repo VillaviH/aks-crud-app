@@ -7,6 +7,7 @@ output "cluster_name" {
 output "cluster_endpoint" {
   description = "Endpoint for the AKS cluster"
   value       = azurerm_kubernetes_cluster.main.kube_config.0.host
+  sensitive   = true
 }
 
 output "cluster_ca_certificate" {
@@ -37,6 +38,11 @@ output "kube_config" {
 output "acr_login_server" {
   description = "Login server for the Azure Container Registry"
   value       = azurerm_container_registry.main.login_server
+}
+
+output "acr_name" {
+  description = "Name of the Azure Container Registry"
+  value       = azurerm_container_registry.main.name
 }
 
 output "acr_admin_username" {

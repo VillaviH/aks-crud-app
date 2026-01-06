@@ -246,6 +246,21 @@ kubectl scale deployment frontend-deployment --replicas=3 -n crud-app
 
 ## 🚨 Solución de Problemas
 
+### Error: "alpha numeric characters only are allowed in name"
+
+**Causa**: Azure Container Registry no permite guiones en el nombre.
+
+**Solución**: Ya corregido en el código. El ACR ahora usa:
+```hcl
+name = "${replace(var.cluster_name, "-", "")}acr${random_string.suffix.result}"
+```
+
+### Error: "Output refers to sensitive values"
+
+**Causa**: Terraform requiere marcar outputs sensibles explícitamente.
+
+**Solución**: Ya corregido. Los outputs sensibles ahora tienen `sensitive = true`.
+
 ### Error: "Authenticating using the Azure CLI is only supported as a User"
 
 **Causa**: Terraform está intentando usar Azure CLI en lugar del Service Principal.
