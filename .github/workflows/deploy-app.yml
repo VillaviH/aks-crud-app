@@ -97,7 +97,6 @@ jobs:
         
         echo "⏳ Waiting for frontend deployment..."
         kubectl rollout status deployment/frontend-deployment -n ${{ env.NAMESPACE }} --timeout=600s
-        }
 
     - name: Debug Frontend Issues
       if: failure()
@@ -123,7 +122,6 @@ jobs:
         kubectl describe pods -n ${{ env.NAMESPACE }} -l app=frontend
 
     - name: Get Service Information
-      if: success()
       run: |
         echo "## 🚀 Application Deployed Successfully!" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
