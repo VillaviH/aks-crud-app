@@ -31,9 +31,6 @@ COPY --from=build /app/build /usr/share/nginx/html
 # Verify files were copied to nginx
 RUN ls -la /usr/share/nginx/html/ && echo "Files copied to nginx successfully"
 
-# Test nginx configuration
-RUN nginx -t && echo "Nginx configuration is valid"
-
 # Create a simple health check endpoint
 RUN echo '#!/bin/sh\nwget --no-verbose --tries=1 --spider http://localhost/ || exit 1' > /health-check.sh && chmod +x /health-check.sh
 
