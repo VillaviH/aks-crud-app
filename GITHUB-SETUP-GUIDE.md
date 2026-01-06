@@ -277,6 +277,20 @@ kubectl scale deployment frontend-deployment --replicas=3 -n crud-app
 
 ## 🚨 Solución de Problemas
 
+### Error: "maven:3.9.4-openjdk-17: not found"
+
+**Causa**: Las imágenes específicas de Maven con OpenJDK también han sido deprecadas.
+
+**Solución**: Ya corregido en el código. El Dockerfile ahora usa:
+- ✅ **Build stage**: `maven:3.9-eclipse-temurin-17-alpine`
+- ✅ **Runtime stage**: `eclipse-temurin:17-jre-alpine`
+
+**Ventajas de las nuevas imágenes**:
+- Mantenidas activamente por Eclipse Foundation
+- Más pequeñas (Alpine Linux)
+- Más seguras y estables
+- Compatible con todas las versiones de Maven 3.9.x
+
 ### Error: "openjdk:17-jdk-slim: not found"
 
 **Causa**: Oracle cambió la distribución de imágenes OpenJDK en Docker Hub.
