@@ -59,6 +59,37 @@ az ad sp create-for-rbac \
   --sdk-auth
 ```
 
+### 2.2 Agregar permisos adicionales al Service Principal
+
+**⚠️ CRÍTICO**: El Service Principal necesita permisos adicionales para crear role assignments.
+
+```bash
+# Obtener información del Service Principal
+SUBSCRIPTION_ID=$(az account show --query id --output tsv)
+echo "Subscription ID: $SUBSCRIPTION_ID"
+
+# Listar Service Principals creados
+az ad sp list --display-name "github-actions-aks-crud" --query "[].{DisplayName:displayName, AppId:appId}" --output table
+
+# Usar el AppId (clientId) del JSON del paso anterior
+CLIENT_ID="TU_CLIENT_ID_AQUI"  # Reemplaza con el clientId de tu AZURE_CREDENTIALS
+
+# Agregar rol de User Access Administrator
+az role assignment create \
+  --assignee $CLIENT_ID \
+  --role "User Access Administrator" \
+  --scope /subscriptions/$SUBSCRIPTION_ID
+
+# Verificar que tiene ambos roles
+az role assignment list --assignee $CLIENT_ID --output table
+```
+
+**Deberías ver dos roles**:
+- ✅ Contributor
+- ✅ User Access Administrator
+
+**Sin estos permisos, el deployment de Terraform fallará al crear role assignments.**
+
 ### 2.2 Copiar la Salida JSON
 
 **Guarda la salida completa**, se ve así:
@@ -245,6 +276,32 @@ kubectl scale deployment frontend-deployment --replicas=3 -n crud-app
 ```
 
 ## 🚨 Solución de Problemas
+
+### Error: "AuthorizationFailed" - Role Assignment
+
+**Causa**: El Service Principal no tiene permisos para crear role assignments.
+
+**Solución Inmediata**: El role assignment se ha comentado temporalmente en Terraform. Después del deployment exitoso, ejecuta manualmente:
+
+```bash
+# El comando exacto aparecerá en el summary del workflow
+# Ejemplo:
+az role assignment create \
+  --assignee <kubelet-identity-object-id> \
+  --role AcrPull \
+  --scope <acr-resource-id>
+```
+
+**Solución Permanente**: Dar permisos adicionales al Service Principal:
+
+```bash
+# Obtener el clientId del secreto AZURE_CREDENTIALS
+# Agregar rol de User Access Administrator
+az role assignment create \
+  --assignee <CLIENT_ID> \
+  --role "User Access Administrator" \
+  --scope /subscriptions/<SUBSCRIPTION_ID>
+```
 
 ### Error: "alpha numeric characters only are allowed in name"
 

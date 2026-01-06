@@ -107,6 +107,11 @@ resource "azurerm_role_assignment" "aks_acr" {
   role_definition_name             = "AcrPull"
   scope                            = azurerm_container_registry.main.id
   skip_service_principal_aad_check = true
+
+  depends_on = [
+    azurerm_kubernetes_cluster.main,
+    azurerm_container_registry.main
+  ]
 }
 
 # Azure Database for PostgreSQL
