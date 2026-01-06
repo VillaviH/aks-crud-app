@@ -96,35 +96,7 @@ jobs:
         kubectl rollout status deployment/backend-deployment -n ${{ env.NAMESPACE }} --timeout=300s
         
         echo "⏳ Waiting for frontend deployment..."
-        kubectl rollout status deployment/frontend-deployment -n ${{ env.NAMESPACE }} --timeout=600s || {
-          echo "❌ Frontend deployment failed. Getting diagnostic information..."
-          echo ""
-          echo "=== Pod Status ==="
-          kubectl get pods -n ${{ env.NAMESPACE }} -l app=frontend -o wide
-          echo ""
-          echo "=== Pod Events ==="
-          kubectl get events -n ${{ env.NAMESPACE }} --field-selector involvedObject.kind=Pod --sort-by='.lastTimestamp' | grep frontend || echo "No events found"
-          echo ""
-          echo "=== Pod Logs (Current) ==="
-          for pod in $(kubectl get pods -n ${{ env.NAMESPACE }} -l app=frontend -o jsonpath='{.items[*].metadata.name}'); do
-            echo "--- Current logs for pod: $pod ---"
-            kubectl logs -n ${{ env.NAMESPACE }} $pod --tail=100 || echo "No current logs available for $pod"
-            echo ""
-            echo "--- Previous logs for pod: $pod ---"
-            kubectl logs -n ${{ env.NAMESPACE }} $pod --previous --tail=100 || echo "No previous logs available for $pod"
-            echo ""
-          done
-          echo ""
-          echo "=== Pod Describe ==="
-          kubectl describe pods -n ${{ env.NAMESPACE }} -l app=frontend
-          echo ""
-          echo "=== Deployment Status ==="
-          kubectl describe deployment frontend-deployment -n ${{ env.NAMESPACE }}
-          echo ""
-          echo "=== ReplicaSet Status ==="
-          kubectl describe rs -n ${{ env.NAMESPACE }} -l app=frontend
-          exit 1
-        }
+        kubectl rollout status deployment/frontend-deployment -n ${{ env.NAMESPACE }} --timeout=600s
         }
 
     - name: Debug Frontend Issues
