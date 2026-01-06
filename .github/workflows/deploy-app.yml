@@ -92,8 +92,23 @@ jobs:
         kubectl apply -f k8s/frontend-deployment.yaml
         
         # Wait for deployments
+        echo "⏳ Waiting for backend deployment..."
         kubectl rollout status deployment/backend-deployment -n ${{ env.NAMESPACE }} --timeout=300s
-        kubectl rollout status deployment/frontend-deployment -n ${{ env.NAMESPACE }} --timeout=300s
+        
+        echo "⏳ Waiting for frontend deployment..."
+        kubectl rollout status deployment/frontend-deployment -n ${{ env.NAMESPACE }} --timeout=600s
+        
+        # If frontend fails, get diagnostic info
+        if [ $? -ne 0 ]; then
+          echo "❌ Frontend deployment failed. Getting diagnostic information..."
+          echo "Pod status:"
+          kubectl get pods -n ${{ env.NAMESPACE }} -l app=frontend
+          echo "Pod logs:"
+          kubectl logs -n ${{ env.NAMESPACE }} -l app=frontend --tail=50
+          echo "Pod describe:"
+          kubectl describe pods -n ${{ env.NAMESPACE }} -l app=frontend
+          exit 1
+        fi
 
     - name: Get Service Information
       run: |
