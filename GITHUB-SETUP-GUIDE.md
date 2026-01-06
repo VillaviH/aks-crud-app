@@ -7,7 +7,7 @@
 - ✅ Azure CLI instalado en tu máquina
 - ✅ Git instalado
 
-## 🏗️ Paso 1: Crear Repositorio en GitHub
+## 🏗️ Paso 1: Crear Repositorio en GitHub..
 
 ### 1.1 Crear Repositorio
 
