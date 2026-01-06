@@ -4,16 +4,6 @@ name: Deploy Application
 on:
   push:
     branches: [ main ]
-    paths:
-      - 'backend/**'
-      - 'frontend/**'
-      - 'k8s/**'
-  pull_request:
-    branches: [ main ]
-    paths:
-      - 'backend/**'
-      - 'frontend/**'
-      - 'k8s/**'
   workflow_dispatch:
 
 env:

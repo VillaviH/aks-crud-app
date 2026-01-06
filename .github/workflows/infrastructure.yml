@@ -4,12 +4,8 @@ name: Infrastructure Deployment
 on:
   push:
     branches: [ main ]
-    paths:
-      - 'infrastructure/**'
   pull_request:
     branches: [ main ]
-    paths:
-      - 'infrastructure/**'
   workflow_dispatch:
     inputs:
       force_apply:
